@@ -1,0 +1,2 @@
+sudo chown -R cassandra:cassandra /var/lib/cassandra/
+http://www.bogotobogo.com/DevOps/DevOps-Cassandra-On-A-Single-Node-Cluster.php

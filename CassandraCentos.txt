@@ -1,0 +1,189 @@
+Home » How to install Cassandra 2 on CentOS 7 / RHEL 7
+How to install Cassandra 2 on CentOS 7 / RHEL 7
+
+April 25, 2015 by Sharad Chhetri 3 Comments
+0Share
+3Share
+Tweet
+0Pin
+0Share
+0Share
+
+Cassandra is one the popular and robust distributed database management system. It is known for providing high availability with no single point of failure. It has one of the awesome feature that is asynchronous replication between multiple nodes without requiring master nodes.
+
+While working on Cassandra cluster, I was introduced with terms called Data Center where multiple nodes are member of it and atleast one member should be act as see.I was glad to see how asynchronously data was replicating across all nodes. So, we will discuss on clustering of cassandra in our upcoming post and also touch the area of backup and restore.
+
+As a first step , in this post we will learn how to install Cassandra on CentOS 7 / RHEL 7 .
+
+Requirements :
+
+1. Cassandra version 2.x . (Here, x can be any value as per current stable release version)
+2. Stable version of Java 7 or 8
+3. Installed CentOS 7 / RHEL 7 on system.
+Install Java
+
+First install the Java on CentOS 7 / RHEL 7. Download the latest stable JDK package from oracle website.
+Download the rpm file as per the architecture of your operating system.
+
+We have download currently available stable jdk-8u45-linux-x64.rpm package. May be when you read this article there will be new stable release available, hence download the JDK package.
+
+Install the jdk rpm package by using below given command.
+
+rpm -ivh jdk-8u45-linux-x64.rpm
+
+In case you have multiple Java installed in your system, you can set java environment of your selective java version. We have already written installation of Java and setting environment in our post. You can read from this link.
+
+Check Java version installed on your CentOS 7 / RHEL 7 system
+
+To check java version , use command below command. As per requirement of Cassandra 2.x installation it should be above java 7.x version.
+
+java -version
+
+Two methods to install Cassandra on CentOS 7 / RHEL 7
+
+Use only one method as per you convenience. Do not opt for both method, follow only one method. Only because of tutorial purpose we are mentioning two alternate methods.
+
+Method 1: By using source code – For this simply untar the source ball and start using it.
+
+Method 2: By using yum command – By using yum command we will use datastax provided packages.
+Method 1: By using source code
+
+Download the latest stable release code from Apache foundation’s Cassandra site.
+
+We are downloading current stable release version. Always use current stable release version.
+Install wget utility in case not available in your system.
+
+yum install wget 
+
+wget -c http://apache.mirrors.hoobly.com/cassandra/2.0.14/apache-cassandra-2.0.14-bin.tar.gz
+
+TIP: To make continue downloading we are using -c option with wget command.
+
+Extract out the downloaded package. We are directly extracting to /opt
+
+tar -xvzf apache-cassandra-2.0.14-bin.tar.gz -C /opt
+
+Change to /opt and do ls command, you will see the extracted out package name
+
+[root@localhost ~]# cd /opt/
+[root@localhost opt]# ls
+apache-cassandra-2.0.14
+[root@localhost opt]#
+
+Now you are ready to use the Cassandra. As per our practical we have extracted Cassandra package to /opt . Hence, absolute path is /opt/apache-cassandra-2.0.14/, it may be different in your case as per where you extracted and version of Cassandra source ball.
+
+Installed Directory : /opt/apache-cassandra-2.0.14
+Configuration Directory : /opt/apache-cassandra-2.0.14/conf/
+Bin Directory for commands : /opt/apache-cassandra-2.0.14/bin/
+Data Directory (Default): /var/lib/cassandra . (You can change it from conf/cassandra.yaml file)
+Log Directory: /var/log/cassandra/
+Start Cassandra (From Source Code)
+
+# Here, we are defining variable CASSANDRA_PATH to store value of absolute path for Cassandra
+CASSANDRA_PATH=/opt/apache-cassandra-2.0.14
+
+# now run below given command, it help to run the Cassandra in background. For foreground process use -f option. The -p option is for creating pid file
+$CASSANDRA_PATH/bin/cassandra -p $CASSANDRA_PATH/cassandra.pid
+
+Once you run the Cassandra, it will by default create cassandra data directory and its path is /var/lib/cassandra/ . It has all data of keyspaces.
+Stop Cassandra (From Source Code)
+
+Because we have started Cassandra with -p option, which will create cassandra.pid file. It will helps us to quickly kill the cassandra running process.
+
+CASSANDRA_PATH=/opt/apache-cassandra-2.0.14
+kill -9  $(cat $CASSANDRA_PATH/cassandra.pid)
+
+If you are advance user, you can use ps -ef|grep cassandra , to get the pid no. of running cassandra process. And kill the process with pid no.
+Login into cqlsh
+
+To login into Cassandra console or cqlsh, use the following command. In other words it is cassandra terminal, where you can create keyspaces, tables or in other words you can do database work.
+
+CASSANDRA_PATH=/opt/apache-cassandra-2.0.14
+$CASSANDRA_PATH/bin/cqlsh
+
+See the below given reference, from our system. I also run the DESC KEYSPACES query.
+
+[root@localhost ~]# $CASSANDRA_PATH/bin/cqlsh
+Connected to Test Cluster at localhost:9160.
+[cqlsh 4.1.1 | Cassandra 2.0.14 | CQL spec 3.1.1 | Thrift protocol 19.39.0]
+Use HELP for help.
+cqlsh> 
+cqlsh> desc keyspaces;
+
+system  system_traces
+
+cqlsh> exit
+
+Install Cassandra on CentOS 7 / RHEL 7 using yum command
+
+You can also install the Cassandra with the help of yum command. Datastax provides the community Cassandra package.
+(Note : Datastax known for providing enterprise level of Apache Cassandra sell and support. The datastax is not endorsed from Apache foundation)
+
+Now we are going to install Cassandra 2.x version with yum command. Installation of Java is prerequisite, hence it should be installed.
+Create yum repo file for Cassandra
+
+Create a yum repo file which will get the packages from Datastax yum repository server.
+
+vi /etc/yum.repos.d/cassandra.repo
+
+Paste below given content in repo file.
+
+[datastax] 
+name = DataStax Repo for Apache Cassandra
+baseurl = http://rpm.datastax.com/community
+enabled = 1
+gpgcheck = 0
+
+Save and exit
+Installing Cassandra with yum command
+
+Now run yum command to install Cassandra 2.x on CentOS 7 / RHEL 7.
+
+yum install dsc20 cassandra2
+
+Once the all package are installed. You are ready to use Cassandra.
+Given below are brief details of Cassandra directories.
+Configuration Directory : /etc/cassandra/
+Data Directory : /var/lib/cassandra
+Log Directory : /var/log/cassandra/
+Start/stop/status/enable cassandra with systemctl command
+
+To start cassandra service:
+
+systemctl start cassandra
+
+To restart cassandra service:
+
+systemctl restart cassandra
+
+To stop cassandra service:
+
+systemctl stop cassandra
+
+To enable cassandra service to start at booting time:
+
+systemctl enable cassandra
+
+To disable cassandra service to do not start at booting time:
+
+systemctl disable cassandra
+
+To check running status of cassandra:
+
+systemctl status cassandra
+
+Connecting to cqlsh
+
+To connect to cassandra terminal, use the command
+
+cqlsh
+
+See below given reference from our system.
+
+[root@localhost ~]# cqlsh 
+Connected to Test Cluster at localhost:9160.
+[cqlsh 4.1.1 | Cassandra 2.0.14 | CQL spec 3.1.1 | Thrift protocol 19.39.0]
+Use HELP for help.
+cqlsh> 
+
+Now your Cassandra is installed and ready to use. 
